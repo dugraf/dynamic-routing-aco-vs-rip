@@ -1,0 +1,2 @@
+# Projeto de Protocolo de Roteamento Dinâmico (DRP)
+Este projeto implementa um protocolo de roteamento dinâmico personalizado baseado em **Otimização por Colônia de Formigas (ACO)** e compara seu desempenho com o **Routing Information Protocol (RIP)** implementado via Quagga. O projeto é executado em um ambiente baseado em Docker com uma topologia de três roteadores, utilizando uma interface web para monitoramento em tempo real das tabelas de roteamento, níveis de feromônios (para ACO) e eventos de rede.
