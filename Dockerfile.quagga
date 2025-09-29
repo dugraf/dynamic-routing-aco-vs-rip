@@ -1,0 +1,30 @@
+FROM ubuntu:20.04
+
+# Evitar prompts interativos durante a instalação
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instalar dependências e Quagga
+RUN apt-get update && apt-get install -y \
+    quagga \
+    net-tools \
+    iputils-ping \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configurar daemons do Quagga
+RUN echo "zebra=yes" > /etc/quagga/daemons && echo "ripd=yes" >> /etc/quagga/daemons
+
+# Criar diretórios para arquivos de controle e logs do Quagga e ajustar permissões
+RUN mkdir -p /var/run/quagga && chown quagga:quagga /var/run/quagga && chmod 755 /var/run/quagga
+RUN mkdir -p /var/log/quagga && chown quagga:quagga /var/log/quagga && chmod 755 /var/log/quagga
+
+# Configurar fuso horário
+ENV TZ=America/Sao_Paulo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Copiar script de inicialização
+COPY start-quagga.sh /start-quagga.sh
+RUN chmod +x /start-quagga.sh
+
+# Comando de inicialização
+CMD ["/start-quagga.sh"]

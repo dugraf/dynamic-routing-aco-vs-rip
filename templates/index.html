@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRP Monitoring Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">DRP Monitoring Dashboard</a>
+        </div>
+    </nav>
+
+<div class="main-container">
+
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" class="navbar-brand">
+                    <i class="fas fa-network-wired"></i>
+                    DRP Network Monitor
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        Sistema Online
+                    </div>
+                    <small class="text-muted">
+                        <i class="fas fa-clock"></i>
+                        Última atualização: <span id="last-updated" class="fw-medium">Carregando...</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-title">
+        <h1>Network Monitoring Dashboard</h1>
+        <p>Monitoramento em tempo real de tabelas de roteamento e eventos de rede</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <div class="stat-number" id="hello-count">0</div>
+            <div class="stat-label">Hello Messages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon info">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <div class="stat-number" id="update-count">0</div>
+            <div class="stat-label">Updates</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-number" id="error-count">0</div>
+            <div class="stat-label">Erros</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-table"></i>
+            </div>
+            <div class="stat-number" id="table-count">0</div>
+            <div class="stat-label">Atualizações de Tabela</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header-custom">
+                    <i class="fas fa-chart-bar"></i>
+                    <h5>Eventos por Tipo</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="chart-container">
+                        <canvas id="eventChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header-custom">
+                    <i class="fas fa-chart-line"></i>
+                    <h5>Tamanho das Tabelas de Roteamento</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="chart-container">
+                        <canvas id="tableSizeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Routing Tables Section -->
+        <div class="row mb-4">
+            <div class="col-12 mb-3">
+                <h3 class="text-dark fw-bold">
+                    <i class="fas fa-route text-primary me-2"></i>
+                    Tabelas de Roteamento
+                </h3>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="router-card">
+                    <div class="router-header">
+                        <h6>
+                            <i class="fas fa-server"></i>
+                            Router 1
+                        </h6>
+                        <div class="router-status"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-table" id="router1-table">
+                            <thead>
+                                <tr>
+                                    <th>Destino</th>
+                                    <th>Próximo Salto</th>
+                                    <th>Métrica</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="router-card">
+                    <div class="router-header">
+                        <h6>
+                            <i class="fas fa-server"></i>
+                            Router 2
+                        </h6>
+                        <div class="router-status"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-table" id="router2-table">
+                            <thead>
+                                <tr>
+                                    <th>Destino</th>
+                                    <th>Próximo Salto</th>
+                                    <th>Métrica</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="router-card">
+                    <div class="router-header">
+                        <h6>
+                            <i class="fas fa-server"></i>
+                            Router 3
+                        </h6>
+                        <div class="router-status"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table custom-table" id="router3-table">
+                            <thead>
+                                <tr>
+                                    <th>Destino</th>
+                                    <th>Próximo Salto</th>
+                                    <th>Métrica</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3>Tabelas de Feromônios</h3>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white router-header">
+                    <h6>
+                        <i class="fas fa-server"></i>
+                        Router 1 - Feromônios
+                    </h6>
+                    <div class="router-status"></div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-bordered" id="router1-pheromone-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Destino</th>
+                                <th>Próximo Salto</th>
+                                <th>Nível de Feromônio</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white router-header">
+                    <h6>
+                        <i class="fas fa-server"></i>
+                        Router 2 - Feromônios
+                    </h6>
+                    <div class="router-status"></div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-bordered" id="router2-pheromone-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Destino</th>
+                                <th>Próximo Salto</th>
+                                <th>Nível de Feromônio</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white router-header">
+                    <h6>
+                        <i class="fas fa-server"></i>
+                        Router 3 - Feromônios
+                    </h6>
+                    <div class="router-status"></div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-bordered" id="router3-pheromone-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Destino</th>
+                                <th>Próximo Salto</th>
+                                <th>Nível de Feromônio</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h3 class="text-dark fw-bold">
+                <i class="fas fa-bell text-warning me-2"></i>
+                Eventos Recentes
+            </h3>
+        </div>
+        <div class="col-12">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-body events-container card-body-custom" id="events" style="max-height: 400px; overflow-y: auto;">
+                    <ul class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let eventChart, tableSizeChart;
+
+    function initCharts() {
+        eventChart = new Chart(document.getElementById('eventChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Router1', 'Router2', 'Router3'],
+                datasets: [
+                    { label: 'Hello', data: [0, 0, 0], backgroundColor: '#28a745' },
+                    { label: 'Update', data: [0, 0, 0], backgroundColor: '#17a2b8' },
+                    { label: 'Erro', data: [0, 0, 0], backgroundColor: '#dc3545' },
+                    { label: 'Tabela', data: [0, 0, 0], backgroundColor: '#ffc107' }
+                ]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        tableSizeChart = new Chart(document.getElementById('tableSizeChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Router1', 'Router2', 'Router3'],
+                datasets: [
+                    { label: 'Tamanho da Tabela', data: [0, 0, 0], borderColor: '#007bff', fill: false }
+                ]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function updateData() {
+        $.getJSON('/api/logs', function(data) {
+            console.log('Dados recebidos:', data); // Depuração
+            $('#last-updated').text(data.last_updated);
+
+            // Atualizar tabelas de roteamento
+            $.each(data.routing_tables, function(router, table) {
+                let tbody = $(`#${router}-table tbody`);
+                tbody.empty();
+                if (table.length === 0) {
+                    tbody.append('<tr><td colspan="4" class="text-center">Nenhuma rota disponível</td></tr>');
+                } else {
+                    $.each(table, function(i, row) {
+                        tbody.append(`
+                            <tr>
+                                <td>${row.destination}</td>
+                                <td>${row.next_hop}</td>
+                                <td>${row.metric}</td>
+                                <td>${row.timestamp}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            });
+
+            // Atualizar tabelas de feromônios
+            $.each(data.pheromone_tables, function(router, table) {
+                let tbody = $(`#${router}-pheromone-table tbody`);
+                tbody.empty();
+                if (table.length === 0) {
+                    tbody.append('<tr><td colspan="3" class="text-center">Nenhum feromônio disponível</td></tr>');
+                } else {
+                    $.each(table, function(i, row) {
+                        tbody.append(`
+                            <tr>
+                                <td>${row.destination}</td>
+                                <td>${row.next_hop}</td>
+                                <td>${row.pheromone.toFixed(2)}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            });
+
+            // Atualizar eventos
+            let eventsList = $('#events ul');
+            eventsList.empty();
+            $.each(data.events, function(i, event) {
+                let className = '';
+                if (event.class === 'hello') className = 'list-group-item-success';
+                else if (event.class === 'update') className = 'list-group-item-info';
+                else if (event.class === 'error') className = 'list-group-item-danger';
+                else if (event.class === 'table') className = 'list-group-item-warning';
+                eventsList.append(`
+                    <li class="list-group-item ${className}">
+                        [${event.timestamp}] ${event.router_id}: ${event.message}
+                    </li>
+                `);
+            });
+
+            // Atualizar gráficos
+            eventChart.data.datasets[0].data = [
+                data.event_counts.router1.hello,
+                data.event_counts.router2.hello,
+                data.event_counts.router3.hello
+            ];
+            eventChart.data.datasets[1].data = [
+                data.event_counts.router1.update,
+                data.event_counts.router2.update,
+                data.event_counts.router3.update
+            ];
+            eventChart.data.datasets[2].data = [
+                data.event_counts.router1.error,
+                data.event_counts.router2.error,
+                data.event_counts.router3.error
+            ];
+            eventChart.data.datasets[3].data = [
+                data.event_counts.router1.table,
+                data.event_counts.router2.table,
+                data.event_counts.router3.table
+            ];
+            eventChart.update();
+
+            tableSizeChart.data.datasets[0].data = [
+                data.routing_tables.router1.length,
+                data.routing_tables.router2.length,
+                data.routing_tables.router3.length
+            ];
+            tableSizeChart.update();
+
+            // Atualizar Stats Grid com contagens totais
+            const totalHello = data.event_counts.router1.hello + data.event_counts.router2.hello + data.event_counts.router3.hello;
+            const totalUpdate = data.event_counts.router1.update + data.event_counts.router2.update + data.event_counts.router3.update;
+            const totalError = data.event_counts.router1.error + data.event_counts.router2.error + data.event_counts.router3.error;
+            const totalTable = data.event_counts.router1.table + data.event_counts.router2.table + data.event_counts.router3.table;
+
+            $('#hello-count').text(totalHello);
+            $('#update-count').text(totalUpdate);
+            $('#error-count').text(totalError);
+            $('#table-count').text(totalTable);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Erro ao buscar logs:', textStatus, errorThrown);
+        });
+    }
+
+    initCharts();
+    setInterval(updateData, 2000);
+    updateData();
+</script>
+    </body>
+</html>
+
