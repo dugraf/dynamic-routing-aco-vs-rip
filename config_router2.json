@@ -1,8 +1,8 @@
 {
     "router_id": "R2",
-    "ip": "172.20.0.3",
+    "ip": "172.20.0.12",
     "port": 5000,
-    "neighbors": ["172.20.0.2", "172.20.0.4"],
+    "neighbors": ["172.20.0.11", "172.20.0.13"],
     "hello_interval": 5,
     "update_interval": 30,
     "check_interval": 180,
