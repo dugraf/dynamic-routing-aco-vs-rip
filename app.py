@@ -41,8 +41,11 @@ def parse_logs(logs, router_id):
             event_counts["hello"] += 1
         elif "Recebido Update" in line:
             event_class = "update"
-            event_counts["update"] += 1
-        elif "Erro" in line or "inf" in line:
+            event_counts["update"] += 1     
+        elif "Erro" in line:
+            event_class = "error"
+            event_counts["error"] += 1
+        elif "inf" in line:
             event_class = "error"
             event_counts["error"] += 1
         elif "Tabela de roteamento atualizada" in line:
