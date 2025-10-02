@@ -79,11 +79,11 @@ Exemplo (`config_router1.json`):
 
 ```json
     {
-        "ip": "172.20.0.2",
-        "neighbors": ["172.20.0.3", "172.20.0.4"],
-        "hello_interval": 2,
-        "update_interval": 5,
-        "check_interval": 15,
+        "ip": "172.20.0.11",
+        "neighbors": ["172.20.0.12", "172.20.0.13"],
+        "hello_interval": 5,
+        "update_interval": 30,
+        "check_interval": 180,
         "port": 5000
     }
 ```
@@ -112,7 +112,7 @@ python app.py
 Para testar o protocolo ACO, envie uma mensagem hello entre roteadores:
 
 ```bash
-echo '{"type": "hello", "source": "172.20.0.2"}' | nc -u 172.20.0.3 5000
+echo '{"type": "hello", "source": "172.20.0.12"}' | nc -u 172.20.0.13 5000
 ```
 
 Para testar a conectividade do RIP:

@@ -14,7 +14,6 @@ TIMEZONE = pytz.timezone('America/Sao_Paulo')
 def get_current_time():
     return datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')
 
-# Carregar configuração
 try:
     with open("config.json", "r") as f:
         config = json.load(f)
@@ -45,11 +44,9 @@ NEIGHBORS = config["neighbors"]
 pheromone_table = defaultdict(lambda: defaultdict(lambda: PHEROMONE_INIT))
 routing_table = defaultdict(lambda: {"next_hop": None, "metric": float("inf"), "timestamp": 0})
 
-# Inicializar tabela de roteamento com o próprio roteador
 routing_table[IP] = {"next_hop": IP, "metric": 0, "timestamp": time.time()}
 
 def measure_latency(destination):
-    """Medir latência para um destino usando ping."""
     try:
         result = os.popen(f"ping -c 1 {destination}").read()
         latency = float(result.split("time=")[1].split(" ms")[0])
@@ -58,7 +55,6 @@ def measure_latency(destination):
         return float("inf")
 
 def calculate_probabilities(dest):
-    """Calcula probabilidades para escolher o próximo salto."""
     probabilities = {}
     total = 0.0
     for next_hop in NEIGHBORS:
@@ -74,7 +70,6 @@ def calculate_probabilities(dest):
     return {next_hop: prob / total for next_hop, prob in probabilities.items()}
 
 def choose_next_hop(dest):
-    """Escolhe o próximo salto com base nas probabilidades."""
     probabilities = calculate_probabilities(dest)
     if not probabilities:
         return random.choice(NEIGHBORS) if NEIGHBORS else None
@@ -92,7 +87,6 @@ def convert_to_dict(table):
     return {dest: dict(next_hops) for dest, next_hops in table.items()}
 
 def send_hello():
-    """Envia mensagens Hello para descobrir vizinhos ativos."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     message = {"type": "hello", "source": IP}
     while True:
@@ -105,7 +99,6 @@ def send_hello():
         time.sleep(HELLO_INTERVAL)
 
 def send_update():
-    """Envia mensagens de atualização com a tabela de feromônios."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     message = {"type": "update", "source": IP, "pheromones": convert_to_dict(pheromone_table)}
     while True:
@@ -117,8 +110,7 @@ def send_update():
                 print(f"[{get_current_time()}] Erro ao enviar Update para {neighbor}: {e}")
         time.sleep(UPDATE_INTERVAL)
 
-def update_pheromones(received_table, source):
-    """Atualiza a tabela de feromônios com base na tabela recebida."""
+def update_pheromones(received_table):
     try:
         for dest, next_hops in received_table.items():
             for next_hop, pheromone in next_hops.items():
@@ -126,7 +118,7 @@ def update_pheromones(received_table, source):
                     (1 - EVAPORATION_RATE) * pheromone_table[dest].get(next_hop, PHEROMONE_INIT)
                     + EVAPORATION_RATE * pheromone
                 )
-                pheromone_table[dest][next_hop] = min(new_pheromone, 1000.0)  # Limite de 1000
+                pheromone_table[dest][next_hop] = min(new_pheromone, 1000.0)
         for dest in pheromone_table:
             if dest != IP:
                 next_hop = choose_next_hop(dest)
@@ -143,7 +135,6 @@ def update_pheromones(received_table, source):
         print(f"[{get_current_time()}] Erro ao atualizar tabela de feromônios: {e}")
 
 def receive_messages():
-    """Recebe mensagens (Hello ou Update) e processa."""
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((IP, PORT))
@@ -151,7 +142,7 @@ def receive_messages():
         while True:
             try:
                 data, addr = sock.recvfrom(1024)
-                message = json.loads(data.decode('utf-8'))  # Forçar UTF-8
+                message = json.loads(data.decode('utf-8'))
                 if message["type"] == "hello":
                     print(f"[{get_current_time()}] Recebido Hello de {message['source']}")
                     latency = measure_latency(message["source"])
@@ -168,7 +159,6 @@ def receive_messages():
         exit(1)
 
 def main():
-    """Função principal do roteador."""
     print(f"[{get_current_time()}] Iniciando roteador {ROUTER_ID} ({IP})")
     
     for neighbor in NEIGHBORS:
